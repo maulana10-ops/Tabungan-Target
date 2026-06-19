@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tabungan Target</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <style>
+        :root {
+            --accent-primary: #8b5cf6;
+            --accent-gradient: linear-gradient(135deg, #6366f1, #d946ef);
+            --success: #10b981;
+            --danger: #f43f5e;
+            --warning: #f59e0b;
+            --text-main: #f8fafc;
+            --text-muted: #cbd5e1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body {
+            background: linear-gradient(-45deg, #0f172a, #4c1d95, #1e1b4b, #831843, #064e3b);
+            background-size: 400% 400%;
+            animation: gradientMove 15s ease infinite;
+            min-height: 100vh;
+            color: var(--text-main);
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            overflow-x: hidden; /* Mencegah geser horizontal */
+        }
+
+        .dashboard-container {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .card {
+            background: rgba(20, 25, 45, 0.35);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 20px; /* Padding seragam untuk mobile */
+            box-shadow: 
+                0 0 20px rgba(139, 92, 246, 0.2), 
+                0 15px 35px rgba(0, 0, 0, 0.4),
+                inset 0 0 10px rgba(255, 255, 255, 0.05);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            width: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 0 30px rgba(217, 70, 239, 0.35), 
+                0 20px 40px rgba(0, 0, 0, 0.5),
+                inset 0 0 15px rgba(255, 255, 255, 0.1);
+        }
+
+        .top-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        /* --- Perbaikan Tata Letak Saldo Card --- */
+        .chart-box {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            width: 100%;
+        }
+
+        .circle-chart {
+            position: relative;
+            width: 90px; /* Diperkecil untuk layar kecil */
+            height: 90px;
+            flex-shrink: 0;
+            filter: drop-shadow(0 0 8px rgba(217, 70, 239, 0.5));
+        }
+
+        .circle-chart svg {
+            transform: rotate(-90deg);
+            width: 100%;
+            height: 100%;
+        }
+
+        .circle-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.1);
+            stroke-width: 8;
+        }
+
+        .circle-progress {
+            fill: none;
+            stroke: url(#gradient-accent);
+            stroke-width: 8;
+            stroke-linecap: round;
+            stroke-dasharray: 282.74; 
+            stroke-dashoffset: 282.74;
+            transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .chart-percentage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1rem;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .stats-details { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 4px;
+            flex: 1;
+            min-width: 0; /* Penting: Mencegah teks menabrak batas container */
+        }
+        
+        .stats-label { 
+            font-size: 0.8rem; 
+            color: var(--text-muted); 
+            text-transform: uppercase; 
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .stats-value {
+            font-size: 1.35rem; /* Ukuran pas untuk HP */
+            font-weight: 700;
+            background: linear-gradient(to right, #fff, #a78bfa);
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));
+            word-wrap: break-word; /* Mencegah angka menabrak */
+            line-height: 1.2;
+        }
+        
+        .stats-subtext { font-size: 0.8rem; font-weight: 500; }
+
+        .target-config-box { display: flex; flex-direction: column; justify-content: center; }
+
+        .form-group { display: flex; flex-direction: column; margin-bottom: 16px; width: 100%; }
+        .form-group label {
+            font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase;
+        }
+
+        input, select {
+            width: 100%; 
+            padding: 12px 14px;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px; 
+            font-size: 0.95rem; 
+            color: var(--text-main);
+            outline: none; 
+            transition: all 0.3s ease;
+            appearance: none;
+        }
+
+        select option { background: #1e1b4b; color: white; }
+
+        input:focus, select:focus {
+            border-color: #d946ef;
+            box-shadow: 0 0 15px rgba(217, 70, 239, 0.3);
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .form-row { display: grid; grid-template-columns: 1fr; gap: 16px; width: 100%; }
+
+        button {
+            width: 100%;
+            padding: 12px 16px; border: none; border-radius: 12px;
+            font-size: 0.95rem; font-weight: 600; cursor: pointer;
+            transition: all 0.3s ease; display: inline-flex; align-items: center; justify-content: center;
+        }
+
+        .btn-primary { 
+            background: var(--accent-gradient); 
+            color: white; 
+            box-shadow: 0 4px 15px rgba(217, 70, 239, 0.4);
+        }
+        .btn-primary:hover { 
+            opacity: 0.95; 
+            transform: translateY(-2px); 
+            box-shadow: 0 8px 20px rgba(217, 70, 239, 0.6);
+        }
+
+        .btn-export {
+            width: auto;
+            background: rgba(16, 185, 129, 0.2); color: #34d399;
+            border: 1px solid rgba(52, 211, 153, 0.3); padding: 8px 14px; font-size: 0.8rem; border-radius: 8px;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.1);
+        }
+        .btn-export:hover { background: var(--success); color: white; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);}
+
+        .btn-action {
+            width: auto;
+            padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; margin-right: 4px; color: white; margin-bottom: 4px;
+        }
+        .btn-edit { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #fbbf24; }
+        .btn-edit:hover { background: var(--warning); color: white; box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);}
+        .btn-delete { background: rgba(244, 63, 94, 0.2); color: #fb7185; border: 1px solid #fb7185; }
+        .btn-delete:hover { background: var(--danger); color: white; box-shadow: 0 0 10px rgba(244, 63, 94, 0.5);}
+        .btn-cancel { background: rgba(255, 255, 255, 0.1); color: white; border: 1px solid rgba(255, 255, 255, 0.2);}
+
+        .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;}
+        .history-header h2 { font-size: 1.1rem; text-shadow: 0 0 8px rgba(255,255,255,0.2);}
+        
+        .table-container { overflow-x: auto; width: 100%; }
+        table { width: 100%; border-collapse: collapse; min-width: 400px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255, 255, 255, 0.08); font-size: 0.85rem;}
+        th { font-weight: 600; color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; white-space: nowrap;}
+        
+        .text-masuk { color: #34d399; font-weight: 600; text-shadow: 0 0 5px rgba(52, 211, 153, 0.3);}
+        .text-keluar { color: #fb7185; font-weight: 600; text-shadow: 0 0 5px rgba(251, 113, 133, 0.3);}
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px);
+            display: none; align-items: center; justify-content: center; z-index: 1000;
+            padding: 20px;
+        }
+        .modal-overlay.active { display: flex; animation: fadeIn 0.3s ease; }
+        .modal-card {
+            background: rgba(30, 27, 75, 0.85); 
+            backdrop-filter: blur(20px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px; padding: 24px; width: 100%; max-width: 400px;
+            box-shadow: 0 0 40px rgba(139, 92, 246, 0.4), inset 0 0 15px rgba(255, 255, 255, 0.05);
+            transform: translateY(20px); animation: slideUp 0.3s forwards;
+        }
+        .modal-card h3 { margin-bottom: 16px; font-size: 1.1rem; text-shadow: 0 0 10px rgba(255,255,255,0.3);}
+
+        footer { text-align: center; margin-top: 10px; font-size: 0.8rem; color: var(--text-muted); text-shadow: 0 0 5px rgba(255,255,255,0.2); padding-bottom: 20px; }
+
+        /* --- Media Queries untuk Layar Lebih Besar (Tablet & Desktop) --- */
+        @media (min-width: 768px) {
+            body { padding: 40px; }
+            .dashboard-container { gap: 24px; }
+            .card { padding: 28px; }
+            .top-grid { grid-template-columns: 1.2fr 1fr; gap: 24px; }
+            .form-row { grid-template-columns: 1fr 1fr 1fr; }
+            .circle-chart { width: 110px; height: 110px; }
+            .chart-percentage { font-size: 1.25rem; }
+            .stats-value { font-size: 1.6rem; }
+            .stats-label { font-size: 0.85rem; }
+            button.btn-primary { width: 100%; }
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { to { transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        
+        <div class="top-grid">
+            <div class="card chart-box">
+                <div class="circle-chart">
+                    <svg viewBox="0 0 110 110">
+                        <defs>
+                            <linearGradient id="gradient-accent" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#38bdf8" />
+                                <stop offset="50%" stop-color="#818cf8" />
+                                <stop offset="100%" stop-color="#e879f9" />
+                            </linearGradient>
+                        </defs>
+                        <circle class="circle-bg" cx="55" cy="55" r="45" />
+                        <circle class="circle-progress" id="progressRing" cx="55" cy="55" r="45" />
+                    </svg>
+                    <div class="chart-percentage" id="txtPersentase">0%</div>
+                </div>
+                <div class="stats-details">
+                    <div class="stats-label">UANG TERKUMPUL</div>
+                    <div class="stats-value" id="totalSaldo">Rp 0</div>
+                    <div class="stats-subtext" id="txtSisaKekurangan">Set target Anda</div>
+                </div>
+            </div>
+
+            <div class="card target-config-box">
+                <div class="form-group">
+                    <label>Target Tabungan</label>
+                    <input type="text" id="targetTabungan" placeholder="Contoh: Rp 5.000.000">
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <form id="formTabungan">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Jenis Transaksi</label>
+                        <select id="jenisTransaksi">
+                            <option value="masuk">Uang Di Tabung</option>
+                            <option value="keluar">Uang Dipakai</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tanggal</label>
+                        <input type="date" id="tanggal" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Nominal (Rp)</label>
+                        <input type="text" id="nominal" placeholder="Masukkan Nominal" required>
+                    </div>
+                </div>
+                <button type="submit" id="btnSubmitForm" class="btn-primary" style="margin-top: 8px;">
+                    Simpan Transaksi
+                </button>
+            </form>
+        </div>
+
+        <div class="card">
+            <div class="history-header">
+                <h2>Riwayat</h2>
+                <button class="btn-export" onclick="exportToExcel()">Export Excel</button>
+            </div>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tanggal</th>
+                            <th>Jenis</th>
+                            <th>Nominal</th>
+                            <th style="text-align: center; width: 130px;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="badanTabel"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <footer>
+            2026 Copyright By Adrian Maulana
+        </footer>
+
+    </div>
+
+    <div class="modal-overlay" id="editModal">
+        <div class="modal-card">
+            <h3>Edit Transaksi</h3>
+            <form id="formEdit">
+                <div class="form-group">
+                    <label>Jenis Transaksi</label>
+                    <select id="editJenis">
+                        <option value="masuk">Menabung (Masuk)</option>
+                        <option value="keluar">Uang Diambil (Keluar)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Tanggal</label>
+                    <input type="date" id="editTanggal" required>
+                </div>
+                <div class="form-group">
+                    <label>Nominal (Rp)</label>
+                    <input type="text" id="editNominal" required>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 24px;">
+                    <button type="button" class="btn-cancel" style="flex: 1;" onclick="closeModal()">Batal</button>
+                    <button type="submit" class="btn-primary" style="flex: 1;">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let dataTabungan = JSON.parse(localStorage.getItem('tabungan_data_v4')) || [];
+        let targetSaatIni = parseInt(localStorage.getItem('target_nominal_v4')) || 5000000;
+        let modeEditId = null;
+
+        const inputNominal = document.getElementById('nominal');
+        const inputTarget = document.getElementById('targetTabungan');
+        const inputTanggal = document.getElementById('tanggal');
+        const inputJenis = document.getElementById('jenisTransaksi');
+        const progressRing = document.getElementById('progressRing');
+        
+        const ringCircumference = 282.74; 
+
+        inputTanggal.valueAsDate = new Date();
+
+        const formatRupiahRealtime = (angkaStr) => {
+            let number_string = angkaStr.replace(/[^,\d]/g, '').toString(),
+                split = number_string.split('),'),
+                sisa = split[0].length % 3,
+                rupiah = split[0].substr(0, sisa),
+                ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+            if (ribuan) {
+                let separator = sisa ? '.' : '';
+                rupiah += separator + ribuan.join('.');
+            }
+            return number_string ? 'Rp ' + rupiah : '';
+        };
+
+        const parseToNumber = (rupiahStr) => parseInt(rupiahStr.replace(/[^0-9]/g, '')) || 0;
+        const formatRupiahMurni = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+        const formatTanggalIndo = (tglStr) => new Date(tglStr).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+
+        inputNominal.addEventListener('input', function() { this.value = formatRupiahRealtime(this.value); });
+        
+        inputTarget.value = formatRupiahMurni(targetSaatIni);
+        inputTarget.addEventListener('input', function() {
+            this.value = formatRupiahRealtime(this.value);
+            targetSaatIni = parseToNumber(this.value);
+            localStorage.setItem('target_nominal_v4', targetSaatIni);
+            calculateAndRenderProgress();
+        });
+
+        const calculateAndRenderProgress = () => {
+            let totalSaldo = 0;
+            dataTabungan.forEach(item => {
+                const nominal = parseInt(item.nominal);
+                if(item.jenis === 'keluar') totalSaldo -= nominal;
+                else totalSaldo += nominal;
+            });
+
+            document.getElementById('totalSaldo').innerText = formatRupiahMurni(totalSaldo);
+
+            let persentase = targetSaatIni > 0 && totalSaldo > 0 ? Math.round((totalSaldo / targetSaatIni) * 100) : 0;
+            if(totalSaldo < 0) persentase = 0; 
+
+            document.getElementById('txtPersentase').innerText = `${persentase}%`;
+
+            let visualPercent = Math.min(persentase, 100);
+            let offset = ringCircumference - (visualPercent / 100) * ringCircumference;
+            progressRing.style.strokeDashoffset = offset;
+
+            const txtSisa = document.getElementById('txtSisaKekurangan');
+            if (totalSaldo >= targetSaatIni) {
+                txtSisa.innerText = "Target tercapai 🎉";
+                txtSisa.style.color = "#34d399";
+            } else {
+                let sisa = targetSaatIni - totalSaldo;
+                txtSisa.innerText = `Kurang ${formatRupiahMurni(sisa)}`;
+                txtSisa.style.color = "var(--text-muted)";
+            }
+        };
+
+        const renderUI = () => {
+            const badanTabel = document.getElementById('badanTabel');
+            badanTabel.innerHTML = '';
+
+            const sortedData = [...dataTabungan].sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+
+            sortedData.forEach((item) => {
+                const isKeluar = item.jenis === 'keluar';
+                const labelJenis = isKeluar ? 'Diambil' : 'Menabung';
+                const classNominal = isKeluar ? 'text-keluar' : 'text-masuk';
+                const tanda = isKeluar ? '- ' : '+ ';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${formatTanggalIndo(item.tanggal)}</td>
+                    <td>${labelJenis}</td>
+                    <td class="${classNominal}">${tanda}${formatRupiahMurni(item.nominal)}</td>
+                    <td style="text-align: center;">
+                        <button class="btn-action btn-edit" onclick="openModal(${item.id})">Edit</button>
+                        <button class="btn-action btn-delete" onclick="hapusData(${item.id})">Hapus</button>
+                    </td>
+                `;
+                badanTabel.appendChild(tr);
+            });
+
+            calculateAndRenderProgress();
+        };
+
+        document.getElementById('formTabungan').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const tanggalVal = inputTanggal.value;
+            const jenisVal = inputJenis.value;
+            const nominalRaw = parseToNumber(inputNominal.value);
+
+            if(!tanggalVal || nominalRaw <= 0) return;
+
+            const dataBaru = { id: Date.now(), tanggal: tanggalVal, jenis: jenisVal, nominal: nominalRaw };
+            dataTabungan.push(dataBaru);
+
+            localStorage.setItem('tabungan_data_v4', JSON.stringify(dataTabungan));
+            inputNominal.value = '';
+            inputJenis.value = 'masuk';
+            renderUI();
+        });
+
+        const modalEdit = document.getElementById('editModal');
+        const inputEditNominal = document.getElementById('editNominal');
+        const inputEditTanggal = document.getElementById('editTanggal');
+        const inputEditJenis = document.getElementById('editJenis');
+
+        inputEditNominal.addEventListener('input', function() { this.value = formatRupiahRealtime(this.value); });
+
+        const openModal = (id) => {
+            const dataItem = dataTabungan.find(item => item.id === id);
+            if(dataItem) {
+                modeEditId = id;
+                inputEditTanggal.value = dataItem.tanggal;
+                inputEditJenis.value = dataItem.jenis || 'masuk';
+                inputEditNominal.value = formatRupiahRealtime(dataItem.nominal.toString());
+                modalEdit.classList.add('active');
+            }
+        };
+
+        const closeModal = () => {
+            modalEdit.classList.remove('active');
+            modeEditId = null;
+        };
+
+        document.getElementById('formEdit').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const tanggalVal = inputEditTanggal.value;
+            const jenisVal = inputEditJenis.value;
+            const nominalRaw = parseToNumber(inputEditNominal.value);
+
+            if(!tanggalVal || nominalRaw <= 0) return;
+
+            const index = dataTabungan.findIndex(item => item.id === modeEditId);
+            if(index !== -1) {
+                dataTabungan[index] = { ...dataTabungan[index], tanggal: tanggalVal, jenis: jenisVal, nominal: nominalRaw };
+                localStorage.setItem('tabungan_data_v4', JSON.stringify(dataTabungan));
+                renderUI();
+                closeModal();
+            }
+        });
+
+        const hapusData = (id) => {
+            if(confirm('Hapus transaksi ini permanen?')) {
+                dataTabungan = dataTabungan.filter(item => item.id !== id);
+                localStorage.setItem('tabungan_data_v4', JSON.stringify(dataTabungan));
+                renderUI();
+            }
+        };
+
+        const exportToExcel = () => {
+            if(dataTabungan.length === 0) { alert('Data kosong.'); return; }
+
+            const rows = dataTabungan.map((item, index) => {
+                const nominal = parseInt(item.nominal);
+                return {
+                    "No": index + 1,
+                    "Tanggal Transaksi": formatTanggalIndo(item.tanggal),
+                    "Jenis": item.jenis === 'keluar' ? 'Uang Diambil' : 'Uang Masuk',
+                    "Nominal Pemasukan (IDR)": item.jenis !== 'keluar' ? nominal : 0,
+                    "Nominal Pengeluaran (IDR)": item.jenis === 'keluar' ? nominal : 0
+                };
+            });
+
+            let totalMasuk = 0, totalKeluar = 0;
+            dataTabungan.forEach(item => {
+                if(item.jenis === 'keluar') totalKeluar += parseInt(item.nominal);
+                else totalMasuk += parseInt(item.nominal);
+            });
+
+            rows.push({ "No": "", "Tanggal Transaksi": "TOTAL", "Jenis": "", "Nominal Pemasukan (IDR)": totalMasuk, "Nominal Pengeluaran (IDR)": totalKeluar });
+            rows.push({ "No": "", "Tanggal Transaksi": "SALDO BERSIH", "Jenis": "", "Nominal Pemasukan (IDR)": (totalMasuk - totalKeluar), "Nominal Pengeluaran (IDR)": "" });
+
+            const worksheet = XLSX.utils.json_to_sheet(rows);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Laporan Keuangan");
+            worksheet['!cols'] = [{wch: 5}, {wch: 20}, {wch: 15}, {wch: 25}, {wch: 25}];
+            XLSX.writeFile(workbook, "Arus_Kas_Tabungan.xlsx");
+        };
+
+        renderUI();
+    </script>
+</body>
+</html>
