@@ -9,13 +9,13 @@
     
     <style>
         :root {
-            --accent-primary: #8b5cf6;
-            --accent-gradient: linear-gradient(135deg, #6366f1, #d946ef);
-            --success: #10b981;
-            --danger: #f43f5e;
-            --warning: #f59e0b;
-            --text-main: #f8fafc;
-            --text-muted: #cbd5e1;
+            --accent-primary: #6366f1;
+            --accent-gradient: linear-gradient(135deg, #3b82f6, #a855f7);
+            --success: #059669;
+            --danger: #e11d48;
+            --warning: #d97706;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
         }
 
         * {
@@ -25,23 +25,28 @@
             font-family: 'Poppins', sans-serif;
         }
 
-        @keyframes gradientMove {
+        /* --- Animasi Background Fluid Gradient 4-Arah (Anti-Monoton) --- */
+        @keyframes fluidGradient {
             0% { background-position: 0% 50%; }
+            25% { background-position: 50% 100%; }
             50% { background-position: 100% 50%; }
+            75% { background-position: 50% 0%; }
             100% { background-position: 0% 50%; }
         }
 
         body {
-            background: linear-gradient(-45deg, #0f172a, #4c1d95, #1e1b4b, #831843, #064e3b);
+            /* Perpaduan warna pastel-neon fresh yang bergerak dinamis */
+            background: linear-gradient(-45deg, #ff9a9e, #fecfef, #a1c4fd, #c2e9fb, #e0c3fc, #ffecd2, #96e6a1);
             background-size: 400% 400%;
-            animation: gradientMove 15s ease infinite;
+            animation: fluidGradient 14s ease-in-out infinite;
+            
             min-height: 100vh;
             color: var(--text-main);
             padding: 16px;
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            overflow-x: hidden; /* Mencegah geser horizontal */
+            overflow-x: hidden;
         }
 
         .dashboard-container {
@@ -52,27 +57,27 @@
             gap: 16px;
         }
 
+        /* --- Efek Frosted White Glassmorphism --- */
         .card {
-            background: rgba(20, 25, 45, 0.35);
-            backdrop-filter: blur(16px) saturate(180%);
-            -webkit-backdrop-filter: blur(16px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.7);
             border-radius: 20px;
-            padding: 20px; /* Padding seragam untuk mobile */
+            padding: 20px;
             box-shadow: 
-                0 0 20px rgba(139, 92, 246, 0.2), 
-                0 15px 35px rgba(0, 0, 0, 0.4),
-                inset 0 0 10px rgba(255, 255, 255, 0.05);
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
+                0 10px 30px rgba(0, 0, 0, 0.03),
+                0 1px 3px rgba(0, 0, 0, 0.01),
+                inset 0 0 30px rgba(255, 255, 255, 0.5);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
             width: 100%;
         }
 
         .card:hover {
             transform: translateY(-2px);
             box-shadow: 
-                0 0 30px rgba(217, 70, 239, 0.35), 
-                0 20px 40px rgba(0, 0, 0, 0.5),
-                inset 0 0 15px rgba(255, 255, 255, 0.1);
+                0 20px 40px rgba(99, 102, 241, 0.12),
+                inset 0 0 20px rgba(255, 255, 255, 0.7);
         }
 
         .top-grid {
@@ -81,7 +86,6 @@
             gap: 16px;
         }
 
-        /* --- Perbaikan Tata Letak Saldo Card --- */
         .chart-box {
             display: flex;
             align-items: center;
@@ -91,10 +95,10 @@
 
         .circle-chart {
             position: relative;
-            width: 90px; /* Diperkecil untuk layar kecil */
+            width: 90px;
             height: 90px;
             flex-shrink: 0;
-            filter: drop-shadow(0 0 8px rgba(217, 70, 239, 0.5));
+            filter: drop-shadow(0 4px 12px rgba(99, 102, 241, 0.25));
         }
 
         .circle-chart svg {
@@ -105,7 +109,7 @@
 
         .circle-bg {
             fill: none;
-            stroke: rgba(255, 255, 255, 0.1);
+            stroke: rgba(0, 0, 0, 0.05);
             stroke-width: 8;
         }
 
@@ -116,7 +120,7 @@
             stroke-linecap: round;
             stroke-dasharray: 282.74; 
             stroke-dashoffset: 282.74;
-            transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .chart-percentage {
@@ -126,7 +130,7 @@
             transform: translate(-50%, -50%);
             font-size: 1rem;
             font-weight: 700;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            color: #4f46e5;
         }
 
         .stats-details { 
@@ -134,7 +138,7 @@
             flex-direction: column; 
             gap: 4px;
             flex: 1;
-            min-width: 0; /* Penting: Mencegah teks menabrak batas container */
+            min-width: 0;
         }
         
         .stats-label { 
@@ -148,17 +152,16 @@
         }
         
         .stats-value {
-            font-size: 1.35rem; /* Ukuran pas untuk HP */
+            font-size: 1.35rem;
             font-weight: 700;
-            background: linear-gradient(to right, #fff, #a78bfa);
+            background: linear-gradient(to right, #1e1b4b, #4f46e5);
             -webkit-background-clip: text; 
             -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));
-            word-wrap: break-word; /* Mencegah angka menabrak */
+            word-wrap: break-word;
             line-height: 1.2;
         }
         
-        .stats-subtext { font-size: 0.8rem; font-weight: 500; }
+        .stats-subtext { font-size: 0.8rem; font-weight: 600; }
 
         .target-config-box { display: flex; flex-direction: column; justify-content: center; }
 
@@ -170,8 +173,8 @@
         input, select {
             width: 100%; 
             padding: 12px 14px;
-            background: rgba(0, 0, 0, 0.25);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(0, 0, 0, 0.08);
             border-radius: 12px; 
             font-size: 0.95rem; 
             color: var(--text-main);
@@ -180,15 +183,20 @@
             appearance: none;
         }
 
-        select option { background: #1e1b4b; color: white; }
+        select option { background: #ffffff; color: #1e293b; }
 
         input:focus, select:focus {
-            border-color: #d946ef;
-            box-shadow: 0 0 15px rgba(217, 70, 239, 0.3);
-            background: rgba(0, 0, 0, 0.4);
+            border-color: #6366f1;
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.15);
+            background: rgba(255, 255, 255, 0.9);
         }
 
-        .form-row { display: grid; grid-template-columns: 1fr; gap: 16px; width: 100%; }
+        .form-row { 
+            display: grid; 
+            grid-template-columns: 1fr; 
+            gap: 16px; 
+            width: 100%; 
+        }
 
         button {
             width: 100%;
@@ -200,63 +208,65 @@
         .btn-primary { 
             background: var(--accent-gradient); 
             color: white; 
-            box-shadow: 0 4px 15px rgba(217, 70, 239, 0.4);
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.25);
         }
         .btn-primary:hover { 
             opacity: 0.95; 
             transform: translateY(-2px); 
-            box-shadow: 0 8px 20px rgba(217, 70, 239, 0.6);
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
         }
 
         .btn-export {
             width: auto;
-            background: rgba(16, 185, 129, 0.2); color: #34d399;
-            border: 1px solid rgba(52, 211, 153, 0.3); padding: 8px 14px; font-size: 0.8rem; border-radius: 8px;
-            box-shadow: 0 0 10px rgba(16, 185, 129, 0.1);
+            background: rgba(5, 150, 105, 0.1); color: var(--success);
+            border: 1px solid rgba(5, 150, 105, 0.2); padding: 8px 14px; font-size: 0.8rem; border-radius: 8px;
         }
-        .btn-export:hover { background: var(--success); color: white; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);}
+        .btn-export:hover { background: var(--success); color: white; }
 
         .btn-action {
             width: auto;
             padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; margin-right: 4px; color: white; margin-bottom: 4px;
         }
-        .btn-edit { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #fbbf24; }
-        .btn-edit:hover { background: var(--warning); color: white; box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);}
-        .btn-delete { background: rgba(244, 63, 94, 0.2); color: #fb7185; border: 1px solid #fb7185; }
-        .btn-delete:hover { background: var(--danger); color: white; box-shadow: 0 0 10px rgba(244, 63, 94, 0.5);}
-        .btn-cancel { background: rgba(255, 255, 255, 0.1); color: white; border: 1px solid rgba(255, 255, 255, 0.2);}
+        .btn-edit { background: rgba(217, 119, 6, 0.1); color: var(--warning); border: 1px solid rgba(217, 119, 6, 0.2); }
+        .btn-edit:hover { background: var(--warning); color: white; }
+        .btn-delete { background: rgba(225, 29, 72, 0.1); color: var(--danger); border: 1px solid rgba(225, 29, 72, 0.2); }
+        .btn-delete:hover { background: var(--danger); color: white; }
+        .btn-cancel { background: rgba(0, 0, 0, 0.05); color: var(--text-muted); border: 1px solid rgba(0, 0, 0, 0.05);}
+        .btn-cancel:hover { background: rgba(0, 0, 0, 0.1); }
 
         .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;}
-        .history-header h2 { font-size: 1.1rem; text-shadow: 0 0 8px rgba(255,255,255,0.2);}
+        .history-header h2 { font-size: 1.1rem; }
         
         .table-container { overflow-x: auto; width: 100%; }
-        table { width: 100%; border-collapse: collapse; min-width: 400px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255, 255, 255, 0.08); font-size: 0.85rem;}
+        table { width: 100%; border-collapse: collapse; min-width: 750px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(0, 0, 0, 0.06); font-size: 0.85rem;}
         th { font-weight: 600; color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; white-space: nowrap;}
         
-        .text-masuk { color: #34d399; font-weight: 600; text-shadow: 0 0 5px rgba(52, 211, 153, 0.3);}
-        .text-keluar { color: #fb7185; font-weight: 600; text-shadow: 0 0 5px rgba(251, 113, 133, 0.3);}
+        .text-masuk { color: var(--success); font-weight: 600; }
+        .text-keluar { color: var(--danger); font-weight: 600; }
 
+        /* Modal Overlay System */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px);
+            background: rgba(15, 23, 42, 0.2); backdrop-filter: blur(8px);
             display: none; align-items: center; justify-content: center; z-index: 1000;
             padding: 20px;
         }
         .modal-overlay.active { display: flex; animation: fadeIn 0.3s ease; }
         .modal-card {
-            background: rgba(30, 27, 75, 0.85); 
-            backdrop-filter: blur(20px) saturate(200%);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px; padding: 24px; width: 100%; max-width: 400px;
-            box-shadow: 0 0 40px rgba(139, 92, 246, 0.4), inset 0 0 15px rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.92); 
+            backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 20px; padding: 24px; width: 100%; max-width: 420px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), inset 0 0 15px rgba(255, 255, 255, 0.5);
             transform: translateY(20px); animation: slideUp 0.3s forwards;
+            max-height: 90vh; overflow-y: auto;
+            color: var(--text-main);
         }
-        .modal-card h3 { margin-bottom: 16px; font-size: 1.1rem; text-shadow: 0 0 10px rgba(255,255,255,0.3);}
+        .modal-card h3 { margin-bottom: 16px; font-size: 1.1rem; color: #4f46e5;}
 
-        footer { text-align: center; margin-top: 10px; font-size: 0.8rem; color: var(--text-muted); text-shadow: 0 0 5px rgba(255,255,255,0.2); padding-bottom: 20px; }
+        footer { text-align: center; margin-top: 10px; font-size: 0.8rem; color: var(--text-muted); padding-bottom: 20px; }
 
-        /* --- Media Queries untuk Layar Lebih Besar (Tablet & Desktop) --- */
         @media (min-width: 768px) {
             body { padding: 40px; }
             .dashboard-container { gap: 24px; }
@@ -267,11 +277,7 @@
             .chart-percentage { font-size: 1.25rem; }
             .stats-value { font-size: 1.6rem; }
             .stats-label { font-size: 0.85rem; }
-            button.btn-primary { width: 100%; }
         }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideUp { to { transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -284,9 +290,8 @@
                     <svg viewBox="0 0 110 110">
                         <defs>
                             <linearGradient id="gradient-accent" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#38bdf8" />
-                                <stop offset="50%" stop-color="#818cf8" />
-                                <stop offset="100%" stop-color="#e879f9" />
+                                <stop offset="0%" stop-color="#3b82f6" />
+                                <stop offset="100%" stop-color="#8b5cf6" />
                             </linearGradient>
                         </defs>
                         <circle class="circle-bg" cx="55" cy="55" r="45" />
@@ -295,7 +300,7 @@
                     <div class="chart-percentage" id="txtPersentase">0%</div>
                 </div>
                 <div class="stats-details">
-                    <div class="stats-label">UANG TERKUMPUL</div>
+                    <div class="stats-label">Sisa Saldo Tersedia</div>
                     <div class="stats-value" id="totalSaldo">Rp 0</div>
                     <div class="stats-subtext" id="txtSisaKekurangan">Set target Anda</div>
                 </div>
@@ -311,12 +316,12 @@
 
         <div class="card">
             <form id="formTabungan">
-                <div class="form-row">
+                <div class="form-row" style="margin-bottom: 16px;">
                     <div class="form-group">
                         <label>Jenis Transaksi</label>
                         <select id="jenisTransaksi">
-                            <option value="masuk">Uang Di Tabung</option>
-                            <option value="keluar">Uang Dipakai</option>
+                            <option value="masuk">Menabung (Masuk)</option>
+                            <option value="keluar">Uang Diambil (Keluar)</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -328,7 +333,25 @@
                         <input type="text" id="nominal" placeholder="Masukkan Nominal" required>
                     </div>
                 </div>
-                <button type="submit" id="btnSubmitForm" class="btn-primary" style="margin-top: 8px;">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                            <label>Pilih Rekening Dana</label>
+                            <button type="button" id="btnHapusRekSaved" style="display:none; width:auto; padding:2px 8px; font-size:0.7rem; background:rgba(225,29,72,0.1); color:var(--danger); border:1px solid rgba(225,29,72,0.2); border-radius:6px; margin-bottom:6px;">Hapus</button>
+                        </div>
+                        <select id="rekeningSelect" required>
+                            <option value="" disabled selected>-- Pilih Rekening Dana --</option>
+                            <option value="tambah_baru">+ Tambah Rekening Baru</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Catatan</label>
+                        <input type="text" id="catatan" placeholder="Contoh: Sisa jajan mingguan / beli gadget">
+                    </div>
+                </div>
+
+                <button type="submit" id="btnSubmitForm" class="btn-primary" style="margin-top: 16px;">
                     Simpan Transaksi
                 </button>
             </form>
@@ -336,7 +359,7 @@
 
         <div class="card">
             <div class="history-header">
-                <h2>Riwayat</h2>
+                <h2>Riwayat Arus Kas</h2>
                 <button class="btn-export" onclick="exportToExcel()">Export Excel</button>
             </div>
             
@@ -345,8 +368,12 @@
                     <thead>
                         <tr>
                             <th>Tanggal</th>
+                            <th>Bank/Wallet</th>
+                            <th>No. Rekening</th>
+                            <th>Atas Nama</th>
                             <th>Jenis</th>
                             <th>Nominal</th>
+                            <th>Catatan</th>
                             <th style="text-align: center; width: 130px;">Aksi</th>
                         </tr>
                     </thead>
@@ -359,6 +386,74 @@
             2026 Copyright By Adrian Maulana
         </footer>
 
+    </div>
+
+    <div class="modal-overlay" id="addAccountModal">
+        <div class="modal-card">
+            <h3>Tambah Rekening Baru</h3>
+            <form id="formAddAccount">
+                <div class="form-group">
+                    <label>Nama Bank / E-Wallet di Indonesia</label>
+                    <select id="addBank" required>
+                        <option value="" disabled selected>-- Pilih Bank/Wallet --</option>
+                        <optgroup label="Bank Umum / BUMN">
+                            <option value="BCA">BCA (Bank Central Asia)</option>
+                            <option value="Mandiri">Bank Mandiri</option>
+                            <option value="BRI">BRI (Bank Rakyat Indonesia)</option>
+                            <option value="BNI">BNI (Bank Negara Indonesia)</option>
+                            <option value="BTN">BTN (Bank Tabungan Negara)</option>
+                            <option value="BSI">BSI (Bank Syariah Indonesia)</option>
+                        </optgroup>
+                        <optgroup label="Bank Digital">
+                            <option value="Bank Jago">Bank Jago</option>
+                            <option value="SeaBank">SeaBank</option>
+                            <option value="Allo Bank">Allo Bank</option>
+                            <option value="Blu by BCA">Blu by BCA Digital</option>
+                            <option value="Neo Commerce">Bank Neo Commerce (BNC)</option>
+                            <option value="Line Bank">Line Bank by Hana Bank</option>
+                        </optgroup>
+                        <optgroup label="Bank Swasta & Daerah">
+                            <option value="CIMB Niaga">CIMB Niaga</option>
+                            <option value="Danamon">Bank Danamon</option>
+                            <option value="Permata">Bank Permata</option>
+                            <option value="OCBC NISP">OCBC NISP</option>
+                            <option value="Maybank">Maybank Indonesia</option>
+                            <option value="Panin">Bank Panin</option>
+                            <option value="Bank Mega">Bank Mega</option>
+                            <option value="Bukopin">KB Bank (Bukopin)</option>
+                            <option value="Bank Muamalat">Bank Muamalat</option>
+                            <option value="Bank bjb">Bank bjb</option>
+                            <option value="Bank DKI">Bank DKI</option>
+                            <option value="Bank Jateng">Bank Jateng</option>
+                            <option value="Bank Jatim">Bank Jatim</option>
+                            <option value="Bank Lainnya">Bank Daerah / Swasta Lainnya</option>
+                        </optgroup>
+                        <optgroup label="E-Wallet / Fintech">
+                            <option value="DANA">DANA</option>
+                            <option value="OVO">OVO</option>
+                            <option value="GoPay">GoPay</option>
+                            <option value="LinkAja">LinkAja</option>
+                            <option value="ShopeePay">ShopeePay</option>
+                        </optgroup>
+                        <optgroup label="Lainnya">
+                            <option value="Cash / Tunai">Cash / Tunai / Celengan</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Nomor Rekening / Nomor HP</label>
+                    <input type="text" id="addNoRek" placeholder="Contoh: 1234567890 / 0812xxx" required>
+                </div>
+                <div class="form-group">
+                    <label>Nama Pemilik Rekening</label>
+                    <input type="text" id="addNamaPemilik" placeholder="Masukkan Nama Lengkap Pemilik" required>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 24px;">
+                    <button type="button" class="btn-cancel" style="flex: 1;" onclick="closeAddAccountModal()">Batal</button>
+                    <button type="submit" class="btn-primary" style="flex: 1;">Simpan</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <div class="modal-overlay" id="editModal">
@@ -380,6 +475,22 @@
                     <label>Nominal (Rp)</label>
                     <input type="text" id="editNominal" required>
                 </div>
+                <div class="form-group">
+                    <label>Bank / Wallet</label>
+                    <input type="text" id="editBank" required>
+                </div>
+                <div class="form-group">
+                    <label>No. Rekening</label>
+                    <input type="text" id="editNoRekField" required>
+                </div>
+                <div class="form-group">
+                    <label>Nama Pemilik</label>
+                    <input type="text" id="editNamaPemilikField" required>
+                </div>
+                <div class="form-group">
+                    <label>Catatan</label>
+                    <input type="text" id="editCatatan">
+                </div>
                 <div style="display: flex; gap: 10px; margin-top: 24px;">
                     <button type="button" class="btn-cancel" style="flex: 1;" onclick="closeModal()">Batal</button>
                     <button type="submit" class="btn-primary" style="flex: 1;">Update</button>
@@ -389,20 +500,87 @@
     </div>
 
     <script>
-        let dataTabungan = JSON.parse(localStorage.getItem('tabungan_data_v4')) || [];
-        let targetSaatIni = parseInt(localStorage.getItem('target_nominal_v4')) || 5000000;
+        let dataTabungan = JSON.parse(localStorage.getItem('tabungan_data_v8')) || [];
+        let savedAccounts = JSON.parse(localStorage.getItem('rekening_saved_v8')) || [];
+        let targetSaatIni = parseInt(localStorage.getItem('target_nominal_v8')) || 5000000;
         let modeEditId = null;
 
         const inputNominal = document.getElementById('nominal');
         const inputTarget = document.getElementById('targetTabungan');
         const inputTanggal = document.getElementById('tanggal');
         const inputJenis = document.getElementById('jenisTransaksi');
+        const inputCatatan = document.getElementById('catatan');
+        const rekeningSelect = document.getElementById('rekeningSelect');
+        const btnHapusRekSaved = document.getElementById('btnHapusRekSaved');
         const progressRing = document.getElementById('progressRing');
         
         const ringCircumference = 282.74; 
-
         inputTanggal.valueAsDate = new Date();
 
+        // --- MANAJEMEN DROP-DOWN REKENING SAVED ---
+        const renderSavedAccountsDropdown = () => {
+            rekeningSelect.innerHTML = `
+                <option value="" disabled selected>-- Pilih Rekening Dana --</option>
+                <option value="tambah_baru">+ Tambah Rekening Baru</option>
+            `;
+            savedAccounts.forEach(acc => {
+                const opt = document.createElement('option');
+                opt.value = acc.id;
+                opt.innerText = `${acc.bank} - ${acc.noRek} (${acc.nama})`;
+                rekeningSelect.appendChild(opt);
+            });
+        };
+
+        rekeningSelect.addEventListener('change', function() {
+            if (this.value === 'tambah_baru') {
+                openAddAccountModal();
+                this.value = ""; 
+                btnHapusRekSaved.style.display = 'none';
+            } else if(this.value !== "") {
+                btnHapusRekSaved.style.display = 'inline-block';
+            } else {
+                btnHapusRekSaved.style.display = 'none';
+            }
+        });
+
+        btnHapusRekSaved.addEventListener('click', function() {
+            const currentId = rekeningSelect.value;
+            if(currentId && currentId !== 'tambah_baru' && confirm('Hapus rekening ini dari memori simpan otomatis?')) {
+                savedAccounts = savedAccounts.filter(acc => acc.id.toString() !== currentId.toString());
+                localStorage.setItem('rekening_saved_v8', JSON.stringify(savedAccounts));
+                renderSavedAccountsDropdown();
+                btnHapusRekSaved.style.display = 'none';
+            }
+        });
+
+        // --- POPUP REKENING ---
+        const modalAddAccount = document.getElementById('addAccountModal');
+        const openAddAccountModal = () => modalAddAccount.classList.add('active');
+        const closeAddAccountModal = () => {
+            modalAddAccount.classList.remove('active');
+            document.getElementById('formAddAccount').reset();
+        };
+
+        document.getElementById('formAddAccount').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const bankVal = document.getElementById('addBank').value;
+            const noRekVal = document.getElementById('addNoRek').value.trim();
+            const namaVal = document.getElementById('addNamaPemilik').value.trim();
+
+            if(!bankVal || !noRekVal || !namaVal) return;
+
+            const newAcc = { id: Date.now(), bank: bankVal, noRek: noRekVal, nama: namaVal };
+            savedAccounts.push(newAcc);
+            localStorage.setItem('rekening_saved_v8', JSON.stringify(savedAccounts));
+            
+            renderSavedAccountsDropdown();
+            rekeningSelect.value = newAcc.id;
+            btnHapusRekSaved.style.display = 'inline-block';
+            
+            closeAddAccountModal();
+        });
+
+        // --- CORE FORMATTER FUNCTIONS ---
         const formatRupiahRealtime = (angkaStr) => {
             let number_string = angkaStr.replace(/[^,\d]/g, '').toString(),
                 split = number_string.split('),'),
@@ -421,15 +599,15 @@
         const formatTanggalIndo = (tglStr) => new Date(tglStr).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
 
         inputNominal.addEventListener('input', function() { this.value = formatRupiahRealtime(this.value); });
-        
         inputTarget.value = formatRupiahMurni(targetSaatIni);
         inputTarget.addEventListener('input', function() {
             this.value = formatRupiahRealtime(this.value);
             targetSaatIni = parseToNumber(this.value);
-            localStorage.setItem('target_nominal_v4', targetSaatIni);
+            localStorage.setItem('target_nominal_v8', targetSaatIni);
             calculateAndRenderProgress();
         });
 
+        // --- CALCULATE PROGRESS ---
         const calculateAndRenderProgress = () => {
             let totalSaldo = 0;
             dataTabungan.forEach(item => {
@@ -452,7 +630,7 @@
             const txtSisa = document.getElementById('txtSisaKekurangan');
             if (totalSaldo >= targetSaatIni) {
                 txtSisa.innerText = "Target tercapai 🎉";
-                txtSisa.style.color = "#34d399";
+                txtSisa.style.color = "var(--success)";
             } else {
                 let sisa = targetSaatIni - totalSaldo;
                 txtSisa.innerText = `Kurang ${formatRupiahMurni(sisa)}`;
@@ -460,6 +638,7 @@
             }
         };
 
+        // --- RENDER DAFTAR TABEL ---
         const renderUI = () => {
             const badanTabel = document.getElementById('badanTabel');
             badanTabel.innerHTML = '';
@@ -475,8 +654,12 @@
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${formatTanggalIndo(item.tanggal)}</td>
+                    <td style="font-weight: 500; color: #2563eb;">${item.bank || '-'}</td>
+                    <td>${item.noRek || '-'}</td>
+                    <td>${item.namaPemilik || '-'}</td>
                     <td>${labelJenis}</td>
                     <td class="${classNominal}">${tanda}${formatRupiahMurni(item.nominal)}</td>
+                    <td style="max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.catatan || '-'}</td>
                     <td style="text-align: center;">
                         <button class="btn-action btn-edit" onclick="openModal(${item.id})">Edit</button>
                         <button class="btn-action btn-delete" onclick="hapusData(${item.id})">Hapus</button>
@@ -488,28 +671,55 @@
             calculateAndRenderProgress();
         };
 
+        // Simpan Form Utama
         document.getElementById('formTabungan').addEventListener('submit', function(e) {
             e.preventDefault();
             
             const tanggalVal = inputTanggal.value;
             const jenisVal = inputJenis.value;
             const nominalRaw = parseToNumber(inputNominal.value);
+            const catatanVal = inputCatatan.value.trim();
+            const rekIdSelected = rekeningSelect.value;
 
-            if(!tanggalVal || nominalRaw <= 0) return;
+            if(!tanggalVal || nominalRaw <= 0 || !rekIdSelected) {
+                alert('Pastikan nominal diisi benar dan Rekening Dana sudah dipilih!');
+                return;
+            }
 
-            const dataBaru = { id: Date.now(), tanggal: tanggalVal, jenis: jenisVal, nominal: nominalRaw };
+            const activeAcc = savedAccounts.find(acc => acc.id.toString() === rekIdSelected.toString());
+            if(!activeAcc) return;
+
+            const dataBaru = { 
+                id: Date.now(), 
+                tanggal: tanggalVal, 
+                jenis: jenisVal, 
+                nominal: nominalRaw,
+                bank: activeAcc.bank,
+                noRek: activeAcc.noRek,
+                namaPemilik: activeAcc.nama,
+                catatan: catatanVal || '-'
+            };
             dataTabungan.push(dataBaru);
 
-            localStorage.setItem('tabungan_data_v4', JSON.stringify(dataTabungan));
+            localStorage.setItem('tabungan_data_v8', JSON.stringify(dataTabungan));
+            
             inputNominal.value = '';
-            inputJenis.value = 'masuk';
+            inputCatatan.value = '';
+            rekeningSelect.value = '';
+            btnHapusRekSaved.style.display = 'none';
+            
             renderUI();
         });
 
+        // --- POPUP EDIT SYSTEM ---
         const modalEdit = document.getElementById('editModal');
         const inputEditNominal = document.getElementById('editNominal');
         const inputEditTanggal = document.getElementById('editTanggal');
         const inputEditJenis = document.getElementById('editJenis');
+        const inputEditBank = document.getElementById('editBank');
+        const inputEditNoRek = document.getElementById('editNoRekField');
+        const inputEditNamaPemilik = document.getElementById('editNamaPemilikField');
+        const inputEditCatatan = document.getElementById('editCatatan');
 
         inputEditNominal.addEventListener('input', function() { this.value = formatRupiahRealtime(this.value); });
 
@@ -520,6 +730,10 @@
                 inputEditTanggal.value = dataItem.tanggal;
                 inputEditJenis.value = dataItem.jenis || 'masuk';
                 inputEditNominal.value = formatRupiahRealtime(dataItem.nominal.toString());
+                inputEditBank.value = dataItem.bank || '';
+                inputEditNoRek.value = dataItem.noRek || '';
+                inputEditNamaPemilik.value = dataItem.namaPemilik || '';
+                inputEditCatatan.value = dataItem.catatan === '-' ? '' : dataItem.catatan;
                 modalEdit.classList.add('active');
             }
         };
@@ -531,29 +745,33 @@
 
         document.getElementById('formEdit').addEventListener('submit', function(e) {
             e.preventDefault();
-            const tanggalVal = inputEditTanggal.value;
-            const jenisVal = inputEditJenis.value;
-            const nominalRaw = parseToNumber(inputEditNominal.value);
-
-            if(!tanggalVal || nominalRaw <= 0) return;
-
             const index = dataTabungan.findIndex(item => item.id === modeEditId);
             if(index !== -1) {
-                dataTabungan[index] = { ...dataTabungan[index], tanggal: tanggalVal, jenis: jenisVal, nominal: nominalRaw };
-                localStorage.setItem('tabungan_data_v4', JSON.stringify(dataTabungan));
+                dataTabungan[index] = { 
+                    ...dataTabungan[index], 
+                    tanggal: inputEditTanggal.value, 
+                    jenis: inputEditJenis.value, 
+                    nominal: parseToNumber(inputEditNominal.value),
+                    bank: inputEditBank.value.trim(),
+                    noRek: inputEditNoRek.value.trim(),
+                    namaPemilik: inputEditNamaPemilik.value.trim(),
+                    catatan: inputEditCatatan.value.trim() || '-'
+                };
+                localStorage.setItem('tabungan_data_v8', JSON.stringify(dataTabungan));
                 renderUI();
                 closeModal();
             }
         });
 
         const hapusData = (id) => {
-            if(confirm('Hapus transaksi ini permanen?')) {
+            if(confirm('Hapus transaksi ini secara permanen?')) {
                 dataTabungan = dataTabungan.filter(item => item.id !== id);
-                localStorage.setItem('tabungan_data_v4', JSON.stringify(dataTabungan));
+                localStorage.setItem('tabungan_data_v8', JSON.stringify(dataTabungan));
                 renderUI();
             }
         };
 
+        // --- EXPORT TO EXCEL SYSTEM ---
         const exportToExcel = () => {
             if(dataTabungan.length === 0) { alert('Data kosong.'); return; }
 
@@ -562,9 +780,13 @@
                 return {
                     "No": index + 1,
                     "Tanggal Transaksi": formatTanggalIndo(item.tanggal),
-                    "Jenis": item.jenis === 'keluar' ? 'Uang Diambil' : 'Uang Masuk',
-                    "Nominal Pemasukan (IDR)": item.jenis !== 'keluar' ? nominal : 0,
-                    "Nominal Pengeluaran (IDR)": item.jenis === 'keluar' ? nominal : 0
+                    "Nama Bank / E-Wallet": item.bank || '-',
+                    "Nomor Rekening / HP": item.noRek || '-',
+                    "Nama Pemilik Rekening": item.namaPemilik || '-',
+                    "Jenis Arus Kas": item.jenis === 'keluar' ? 'Uang Diambil' : 'Uang Masuk',
+                    "Nominal Masuk (IDR)": item.jenis !== 'keluar' ? nominal : 0,
+                    "Nominal Keluar (IDR)": item.jenis === 'keluar' ? nominal : 0,
+                    "Catatan": item.catatan || '-'
                 };
             });
 
@@ -574,16 +796,17 @@
                 else totalMasuk += parseInt(item.nominal);
             });
 
-            rows.push({ "No": "", "Tanggal Transaksi": "TOTAL", "Jenis": "", "Nominal Pemasukan (IDR)": totalMasuk, "Nominal Pengeluaran (IDR)": totalKeluar });
-            rows.push({ "No": "", "Tanggal Transaksi": "SALDO BERSIH", "Jenis": "", "Nominal Pemasukan (IDR)": (totalMasuk - totalKeluar), "Nominal Pengeluaran (IDR)": "" });
+            rows.push({ "No": "", "Tanggal Transaksi": "TOTAL GLOBAL", "Nama Bank / E-Wallet": "", "Nomor Rekening / HP": "", "Nama Pemilik Rekening": "", "Jenis Arus Kas": "", "Nominal Masuk (IDR)": totalMasuk, "Nominal Keluar (IDR)": totalKeluar, "Catatan": "" });
+            rows.push({ "No": "", "Tanggal Transaksi": "SALDO BERSIH", "Nama Bank / E-Wallet": "", "Nomor Rekening / HP": "", "Nama Pemilik Rekening": "", "Jenis Arus Kas": "", "Nominal Masuk (IDR)": (totalMasuk - totalKeluar), "Nominal Keluar (IDR)": "", "Catatan": "" });
 
             const worksheet = XLSX.utils.json_to_sheet(rows);
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, "Laporan Keuangan");
-            worksheet['!cols'] = [{wch: 5}, {wch: 20}, {wch: 15}, {wch: 25}, {wch: 25}];
-            XLSX.writeFile(workbook, "Arus_Kas_Tabungan.xlsx");
+            worksheet['!cols'] = [{wch: 5}, {wch: 20}, {wch: 22}, {wch: 22}, {wch: 25}, {wch: 18}, {wch: 22}, {wch: 22}, {wch: 30}];
+            XLSX.writeFile(workbook, "Laporan_Arus_Kas_Target.xlsx");
         };
 
+        renderSavedAccountsDropdown();
         renderUI();
     </script>
 </body>
